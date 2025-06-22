@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 
-
 // --- Mock Data ---
 const workers = [
   { index: 0, id: 1, name: '관리자' },
@@ -24,25 +23,6 @@ const getWorkerSchedule = (days, daysDiff) => {
 };
 
 // 기념일 정보를 가져오는 함수
-async function getAnniversary(year, month) {
-  // 1. 본인의 서비스 키를 여기에 넣으세요.
-  // 2. 요청할 URL을 만듭니다.
-  const serviceKey = 'zrx7X4hzbAX0NhU2IUMh1I%2F4F0%2FmswGB1oJO9Nibv9Bg3GorKQIiUD6woKRnXEov8usJ2xiErT0dncsEvMpayQ%3D%3D';
-  const url = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?serviceKey=${serviceKey}&solYear=${year}&solMonth=${String(month + 1).padStart(2, '0')}&_type=json`;
-
-  try {
-    // 3. fetch로 API를 호출하고 응답을 기다립니다.
-    const response = await fetch(url);
-    const data = await response.json(); // 응답을 JSON 형태로 변환합니다.
-
-    // 4. 받아온 데이터를 출력합니다.
-
-    return data.response.body.items.item;
-  } catch (error) {
-    console.error('기념일 정보를 가져오는 데 실패했습니다:', error);
-    return null;
-  }
-}
 
 // 로그인 화면 컴포넌트
 function LoginScreen({ onLogin }) {
@@ -155,13 +135,22 @@ function ScheduleTable({ onLogout }) {
     return Diff;
   }, [currentMonth]);
 
+ 
+
   useEffect(() => {
-    const loadHolidays = async () => {
-      const data = await getAnniversary(currentYear, currentMonth);
-      console.log(data);
-      SetAnniversaries(data);
-    };
-    loadHolidays();
+
+    async function GetAnni() {
+      const response = await fetch(`/api/anniversary?year=${currentYear}&month=${currentMonth}`);
+      console.log(response);
+  
+
+      const result = await response.json();
+      console.log(result);
+      return response;
+    }
+    
+    GetAnni();
+    
   }, [currentMonth]);
 
   const scheduleData = useMemo(() => getWorkerSchedule(monthDetails.length, daysDiff), [currentMonth]);
