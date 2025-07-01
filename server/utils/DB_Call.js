@@ -32,7 +32,6 @@ async function executeQuery(sql, values = []) {
   }
 }
 
-
 module.exports = {
   executeQuery,
 };

@@ -7,14 +7,14 @@ async function GetCalData(currentYear, currentMonth) {
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
-  const Anniversaries = await getAnniData();
+  const Anniversaries = await getAnniData(currentYear, currentMonth);
 
   return Array.from({ length: daysInMonth }, (_, i) => {
     const date = i + 1;
     const dayOfWeek = new Date(currentYear, currentMonth, date).getDay(); // 0: Sun, 6: Sat
 
     const dailyAnniversaries = Anniversaries.filter((anni) => {
-      return parseInt(anni.locdate) === date; // assuming anni.locdate is a string representing the day
+      return parseInt(anni.locdate) === date;
     });
     return {
       date,
@@ -37,7 +37,6 @@ async function getAnniData(currentYear, currentMonth) {
 
     // API 응답 구조에 따라 안전하게 데이터 접근 및 상태 업데이트
     const items = result?.data?.response?.body?.items?.item;
-
     if (Array.isArray(items)) {
       return items;
     } else if (items) {

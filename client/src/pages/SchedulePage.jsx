@@ -16,7 +16,6 @@ function SchedulePage({ onLogout }) {
     async function getWorkers() {
       const result = await fetch(`/DB/getWorkers`);
       const data = await result.json();
-      console.log(data);
       setWorkers(data);
     }
     getWorkers();
@@ -25,14 +24,13 @@ function SchedulePage({ onLogout }) {
   useEffect(() => {
     const fetchData = async () => {
       const temp = await GetCalData(currentYear, currentMonth);
-      console.log(temp);
       setMonthDetails(temp);
     };
     fetchData();
   }, [currentYear, currentMonth]);
 
   const scheduleData = useMemo(() => {
-    GetSchedule(Workers, monthDetails.length, currentYear, currentMonth);
+    return GetSchedule(Workers, monthDetails.length, currentYear, currentMonth);
   }, [monthDetails]);
 
   const goToPreviousMonth = () => {

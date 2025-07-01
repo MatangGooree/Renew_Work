@@ -4,7 +4,7 @@ function LoginScreen({ onLogin }) {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 font-sans">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-lg">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">근무 스케줄 로그인</h2>
+          <h2 className="mt-6 text-3xl font-bold text-gray-900">KBS 관제근무 로그인</h2>
           <p className="mt-2 text-sm text-gray-600">아이디와 비밀번호를 입력해주세요.</p>
         </div>
         <form

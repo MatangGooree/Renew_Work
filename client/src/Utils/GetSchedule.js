@@ -12,7 +12,7 @@ function daysDiff(currentYear, currentMonth) {
 function GetSchedule(Workers, days, currentYear, currentMonth) {
   const schedule = {};
   Workers.forEach((worker) => {
-    const startIndex = parseInt(worker.Worker_ID);
+    const startIndex = 5 - parseInt(worker.Worker_ID);
     const index = daysDiff(currentYear, currentMonth) + startIndex;
     schedule[worker.Name] = Array.from({ length: days }, (_, i) => shifts[(index + i) % shifts.length]);
   });

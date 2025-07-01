@@ -23,27 +23,32 @@ function ScheduleTable({ monthDetails, Workers, scheduleData }) {
           </tr>
         </thead>
         <tbody className="bg-white ">
-          {Workers.map((worker) => (
-            <tr key={worker.Worker_ID}>
-              <td className="sticky left-0 bg-gray-200 px-4 py-3 whitespace-nowrap text-sm font-semibold text-gray-900 z-10 border-r">{worker.Name}</td>
-              {monthDetails.map(({ isWeekend, isToday, Anniversary }, index) => {
-                if (worker.Roll === 'manager') {
-                  const shift = isWeekend ? 'XX' : '○';
-                  return (
-                    <td key={index}>
-                      <div className={`w-full h-full flex items-center justify-center py-3 ${isWeekend || Anniversary.length > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>{shift}</div>
-                    </td>
-                  );
-                } else {
-                  return (
-                    <td key={index}>
-                      {/* <div className={`w-full h-full flex items-center justify-center py-3 ${isWeekend || Anniversary.length > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>{scheduleData[worker.Name][index]}</div> */}
-                    </td>
-                  );
-                }
-              })}
-            </tr>
-          ))}
+          {Workers.map((worker) => {
+            if (worker.Roll == 'admin') {
+              return null;
+            }
+            return (
+              <tr key={worker.Worker_ID}>
+                <td className="sticky left-0 bg-gray-200 px-4 py-3 whitespace-nowrap text-sm font-semibold text-gray-900 z-10 border-r">{worker.Name}</td>
+                {monthDetails.map(({ isWeekend, isToday, Anniversary }, index) => {
+                  if (worker.Roll === 'manager') {
+                    const shift = isWeekend ? 'XX' : '○';
+                    return (
+                      <td key={index}>
+                        <div className={`w-full h-full flex items-center justify-center py-3 ${isWeekend || Anniversary.length > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>{shift}</div>
+                      </td>
+                    );
+                  } else {
+                    return (
+                      <td key={index}>
+                        <div className={`w-full h-full flex items-center justify-center py-3 ${isWeekend || Anniversary.length > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>{scheduleData[worker.Name][index]}</div>
+                      </td>
+                    );
+                  }
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

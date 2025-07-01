@@ -18,7 +18,14 @@ export default function App() {
 
   return (
     <>
-      {isLoggedIn ? <div><NavigationBar/><ScheduleTable onLogout={handleLogout} /></div> : <LoginScreen onLogin={handleLogin} />}
+      {isLoggedIn ? (
+        <div>
+          <NavigationBar />
+          <ScheduleTable onLogout={handleLogout} />
+        </div>
+      ) : (
+        <LoginScreen onLogin={handleLogin} />
+      )}
     </>
   );
 }
