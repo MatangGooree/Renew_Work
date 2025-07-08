@@ -30,13 +30,14 @@ async function GetCalData(currentYear, currentMonth) {
 async function getAnniData(currentYear, currentMonth) {
   try {
     const response = await fetch(`/api/anniversary?year=${currentYear}&month=${currentMonth}`);
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const result = await response.json();
-
     // API 응답 구조에 따라 안전하게 데이터 접근 및 상태 업데이트
     const items = result?.data?.response?.body?.items?.item;
+
     if (Array.isArray(items)) {
       return items;
     } else if (items) {

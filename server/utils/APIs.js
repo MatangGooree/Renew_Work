@@ -8,7 +8,9 @@ async function getAnniversary(year, month) {
   try {
     const response = await fetch(url);
     const data = await response.json();
+
     const result = data.response.body.items.item;
+
     if (Array.isArray(result)) {
       for (let i = 0; i < result.length; i++) {
         const date = String(result[i]['locdate']).slice(-2);

@@ -1,9 +1,9 @@
 require('dotenv').config();
 
-const { createClient } = require('redis'); // redis 클라이언트
 const express = require('express');
 const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
+const { createClient } = require('redis'); // redis 클라이언트
+const RedisStore = require('connect-redis').default;
 const path = require('path');
 const app = express();
 const PORT = 8080; // 환경변수 PORT를 사용하거나 기본값 5000
@@ -11,7 +11,6 @@ const PORT = 8080; // 환경변수 PORT를 사용하거나 기본값 5000
 // 1. Redis 클라이언트 생성 및 연결
 const redisClient = createClient({
   url: 'redis://192.168.45.126:6379',
-  // 만약 비밀번호가 있다면: 'redis://:your_password@192.168.0.5:6379'
 });
 
 // 연결 상태를 모니터링하는 이벤트 리스너
@@ -25,14 +24,14 @@ redisClient.connect().catch(console.error);
 // 2. Redis 스토어 초기화
 const redisStore = new RedisStore({
   client: redisClient,
-  prefix: 'session:', // Redis 키 앞에 붙일 접두사
+  prefix: 'session:',
 });
 
 // 3. express-session의 store 옵션에 redisStore를 지정
 app.use(
   session({
     store: redisStore, // 세션 저장소로 Redis를 사용
-    secret: 'your-very-secret-key',
+    secret: 'ㅁㄴ',
     resave: false,
     saveUninitialized: false, // 로그인한 사용자에게만 세션을 생성
     cookie: {
@@ -49,28 +48,37 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 const { getAnniversary } = require('./utils/APIs');
 const { executeQuery } = require('./utils/DB_Call');
 
-app.get('/{*any}', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
-
 //로그인
-app.post('/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
-  // 데이터베이스에서 사용자 찾기
-  const user = users.find((u) => u.username === username && u.password === password);
+  console.log(username, password);
+  // 데이터베이스에서 사용자 찾기 (쿼리 사용)
+  const sql = `SELECT worker_ID, Name, Roll, remain_Day, remain_Night FROM Workers WHERE login_ID = ? AND login_PW = ? LIMIT 1`;
+  let user;
+  try {
+    const result = await executeQuery(sql, [username, password]);
+    console.log(result);
+    if (result && result.length > 0) {
+      user = result[0];
+    } else {
+      user = null;
+    }
+  } catch (error) {
+    console.error('로그인 쿼리 오류:', error);
+    user = null;
+  }
+
+  console.log(user);
+  console.log(req.session);
 
   if (user) {
-    // 사용자를 찾았으면, 세션에 사용자 정보를 저장합니다.
-    // 이 정보가 서버에 저장되고, 클라이언트는 세션 ID만 갖게 됩니다.
     req.session.user = {
-      id: user.id,
-      username: user.username,
-      name: user.name,
+      id: user.worker_ID,
+      roll: user.Roll,
+      name: user.Name,
+      remain_Day: user.remain_Day,
+      remain_Night: user.remain_Night,
     };
     console.log('로그인 성공. 세션 정보:', req.session);
     res.json({ success: true, message: '로그인 성공!', user: req.session.user });
@@ -93,4 +101,12 @@ app.get('/DB/getWorkers', async (req, res) => {
   const sql = `SELECT Worker_ID,Name,Roll,remain_Day,remain_Night FROM Workers;`;
   const result = await executeQuery(sql);
   res.json(result);
+});
+
+app.get('/{*any}', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
