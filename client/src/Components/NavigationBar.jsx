@@ -1,5 +1,10 @@
 // 상단 네비게이션 바 컴포넌트
-function NavigationBar({ onLogout }) {
+
+import { useAuth } from '../context/AuthContext';
+
+function NavigationBar() {
+  const { user, logOut } = useAuth();
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,7 +28,11 @@ function NavigationBar({ onLogout }) {
             </div>
           </div>
           <div className="hidden md:block">
-            <button onClick={onLogout} className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
+            <button
+              onClick={() => {
+                logOut();
+              }}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
               로그아웃
             </button>
           </div>
