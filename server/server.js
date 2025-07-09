@@ -43,7 +43,7 @@ app.use(
 );
 
 //로그인
-app.post('/api/login', async (req, res) => {
+app.post('/api/logIn', async (req, res) => {
   const { username, password } = req.body;
 
   // 데이터베이스에서 사용자 찾기 (쿼리 사용)
@@ -82,6 +82,20 @@ app.get('/api/verifyUser', (req, res) => {
     res.json({ success: true, user: req.session.user });
   } else {
     res.status(401).json({ success: false, message: '인증되지 않았습니다.' });
+  }
+});
+
+//로그아웃
+app.get('/api/logOut', (req, res) => {
+  console.log(req);
+  if (req.session.user) {
+    req.session.destroy((err) => {
+      if (err) {
+        return req.status(500).send(err);
+      }
+      res.clearCookie('connect.sid'); // 'connect.sid'는 기본 쿠키 이름
+      res.send('Logged out successfully.');
+    });
   }
 });
 

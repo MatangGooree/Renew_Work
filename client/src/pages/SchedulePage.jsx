@@ -1,6 +1,7 @@
 // 스케줄 표 컴포넌트
 import { useState, useMemo, useEffect } from 'react';
 import ScheduleTable from '../Components/ScheduleTable';
+import HolidayTable from '../Components/HolidayTable';
 import { GetCalData } from '../Utils/GetCalender';
 import { GetSchedule } from '../Utils/GetSchedule';
 
@@ -12,6 +13,7 @@ function SchedulePage({ onLogout }) {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth(); // 0-11
 
+  //근무자
   useEffect(() => {
     async function getWorkers() {
       const result = await fetch(`/DB/getWorkers`);
@@ -21,6 +23,7 @@ function SchedulePage({ onLogout }) {
     getWorkers();
   }, []);
 
+  //달력
   useEffect(() => {
     const fetchData = async () => {
       const temp = await GetCalData(currentYear, currentMonth);
@@ -29,6 +32,7 @@ function SchedulePage({ onLogout }) {
     fetchData();
   }, [currentYear, currentMonth]);
 
+  //근무 스케쥴
   const scheduleData = useMemo(() => {
     return GetSchedule(Workers, monthDetails.length, currentYear, currentMonth);
   }, [monthDetails]);
@@ -73,6 +77,8 @@ function SchedulePage({ onLogout }) {
               <span>휴무</span>
             </div>
           </div>
+
+          <HolidayTable />
         </div>
       </main>
     </div>

@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
 
   const logIn = async (username, password) => {
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/logIn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -42,8 +42,18 @@ export function AuthProvider({ children }) {
   };
 
   // 로그아웃 함수
-  const logOut = () => {
-    setUser(null);
+  const logOut = async () => {
+    try {
+      const response = await fetch('/api/logOut', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        setUser(null);
+      } else {
+      }
+    } catch (error) {}
   };
 
   const value = { user, logIn, logOut };
@@ -51,7 +61,6 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// 3. 쉽게 사용할 수 있도록 custom hook 생성
 export function useAuth() {
   return useContext(AuthContext);
 }
