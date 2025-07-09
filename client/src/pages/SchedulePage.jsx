@@ -78,7 +78,7 @@ function SchedulePage({ onLogout }) {
             </div>
           </div>
 
-          <HolidayTable />
+          <HolidayTable Workers={Workers} />
         </div>
       </main>
     </div>
