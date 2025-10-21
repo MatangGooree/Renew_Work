@@ -1,4 +1,5 @@
-require('dotenv').config();
+import 'dotenv/config'; // 1. dotenv/config를 import하여 환경변수 로드
+
 
 const Key = process.env.AnniversaryAPIkey;
 
@@ -29,6 +30,4 @@ async function getAnniversary(year, month) {
   }
 }
 
-module.exports = {
-  getAnniversary,
-};
+export{getAnniversary};
