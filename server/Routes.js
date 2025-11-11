@@ -1,8 +1,8 @@
 import express from "express";
 import { getAnniversary } from "./APIs.js";
 import { GetEmptySchedule } from "./utils/GetFinalSchedule.js";
-import { FindWorker, GetWorkers } from "./WorkerDB.js";
-import { addVacation } from "./VacationDB.js";
+import { FindWorker, GetWorkers } from "./DB/WorkerDB.js";
+import { addVacation, deleteVacation } from "./DB/VacationDB.js";
 
 const router = express.Router();
 
@@ -70,13 +70,8 @@ router.get("/AuthCheck", AuthCheck, async (req, res) => {
 //스케줄
 router.get("/getSchedule", AuthCheck, async (req, res) => {
   const { year, month } = req.query;
-  const scheduleData = GetEmptySchedule(year, month);
-  const workers = await GetWorkers();
-  scheduleData.ScheduleInfo.forEach((worker) => {
-    worker.worker.name = workers.find(
-      (s) => s.worker_ID === parseInt(worker.worker.name) + 1,
-    ).Name;
-  });
+  console.log(year, month);
+  const scheduleData = await GetEmptySchedule(year, month);
 
   res.json(scheduleData);
 });
@@ -94,6 +89,18 @@ router.get("/anniversary", async (req, res) => {
 
   const data = await getAnniversary(year, month);
   res.json({ data });
+});
+router.post("/summitVacation", AuthCheck, async (req, res) => {
+  const { worker_ID, date, schedule } = req.body;
+  console.dir(req.body);
+  let result;
+  if (schedule.includes("cancel")) {
+    result = await deleteVacation(worker_ID, date, schedule);
+  } else {
+    result = await addVacation(worker_ID, date, schedule);
+  }
+
+  res.json({ result });
 });
 
 export default router;

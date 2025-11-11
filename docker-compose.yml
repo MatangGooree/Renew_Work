@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  # 이제 'app'이라는 서비스 하나만 존재합니다.
+  app:
+    # 현재 폴더(.)의 'Dockerfile'을 사용해 빌드합니다.
+    build: .
+    container_name: renew_schedule
+    ports:
+      # "내 PC의 80번 포트" : "컨테이너의 5000번 포트"
+      # 이제 localhost:80 (그냥 localhost)으로 접속하면
+      # Node.js 서버(5000번)로 바로 연결됩니다.
+      - "80:5000"
+    environment:
+      # 여기에 DB 연결 정보 등 환경 변수를 넣으세요.
+      - NODE_ENV=production
+      # - DATABASE_URL=...

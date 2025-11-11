@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
     const fetchUser = async () => {
       const response = await fetch('/api/AuthCheck', { credentials: 'include' })
       const data = await response.json()
-      console.dir(data)
+      // console.dir(data)
       if (data.success && data.user) {
         setUser(data.user)
       }

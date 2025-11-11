@@ -9,6 +9,7 @@ datasource db {
 model Vacations {
   worker_ID         Int
   Date              DateTime            @db.DateTime(0)
+  Time              String
   vac_ID            Int                 @id @default(autoincrement())
   worker Workers @relation(fields: [worker_ID], references: [worker_ID])
   @@index([worker_ID], map: "Vacations_Workers_FK")
@@ -21,7 +22,6 @@ model Workers {
   login_ID     String
   login_PW     String
   remain_Day   Int
-  remain_Night Int
 
   vacations Vacations[]
 }

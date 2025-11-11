@@ -1,36 +1,38 @@
 // 스케줄 표 컴포넌트
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import ScheduleTable from '../Components/ScheduleTable'
+import { useAuth } from '../Contexts/Auth'
 
 function SchedulePage() {
-  const [Workers, setWorkers] = useState([])
+  const { user } = useAuth()
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [scheduleData, setScheduleData] = useState([])
+  const [scheduleData, setScheduleData] = useState(null)
 
-  const currentYear = currentDate.getFullYear()
-  const currentMonth = currentDate.getMonth() // 0-11
+  const getWorkers = useCallback(async (params) => {
+    const result = await fetch(`/api/getSchedule?${params}`)
+    const data = await result.json()
+    setScheduleData(data)
+  }, [])
+
+  const goToPreviousMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+    )
+  }
+
+  const goToNextMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+    )
+  }
 
   useEffect(() => {
     const params = new URLSearchParams({
       year: currentDate.getFullYear(),
       month: currentDate.getMonth() + 1,
     })
-    async function getWorkers() {
-      const result = await fetch(`/api/getSchedule?${params}`)
-      const data = await result.json()
-      console.dir(data)
-      setScheduleData(data)
-    }
-    getWorkers()
-  }, [currentYear, currentMonth])
-
-  const goToPreviousMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth - 1, 1))
-  }
-
-  const goToNextMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth + 1, 1))
-  }
+    getWorkers(params)
+  }, [currentDate])
 
   return (
     <div className='bg-gray-50 min-h-screen font-sans'>
@@ -57,7 +59,7 @@ function SchedulePage() {
               </svg>
             </button>
             <h1 className='text-xl sm:text-2xl font-bold text-gray-800 w-40 sm:w-48 text-center mx-2'>
-              {currentYear}년 {currentMonth + 1}월
+              {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
             </h1>
             <button
               onClick={goToNextMonth}
@@ -80,18 +82,20 @@ function SchedulePage() {
             </button>
           </div>
 
-          <ScheduleTable scheduleData={scheduleData} />
+          <ScheduleTable scheduleData={scheduleData} getWorkers={getWorkers} />
 
-          <div className='mt-6 flex items-center justify-end space-x-4 text-sm text-gray-600'>
-            <div className='flex items-center'>
-              <span className='w-4 h-4 rounded-full bg-blue-100 mr-2 border border-blue-300'></span>
-              <span>주간/야간</span>
+          {user && user.id < 4 && (
+            <div className='mt-6 flex items-center justify-end space-x-4 text-sm text-gray-600'>
+              <div className='flex items-center'>
+                <span
+                  className={`w-4 h-4 rounded-full mr-2 border ${scheduleData && scheduleData.WorkerData[parseInt(user.id)].remain_Day >= 0 ? 'bg-blue-100' : 'bg-red-100'} border-blue-300`}
+                ></span>
+                {scheduleData && (
+                  <span>{`${scheduleData.WorkerData[parseInt(user.id)].remain_Day >= 0 ? '사용 가능한 대체 휴무 : ' + scheduleData.WorkerData[parseInt(user.id)].remain_Day : '해야 할 대체 근무 : ' + -scheduleData.WorkerData[parseInt(user.id)].remain_Day}`}</span>
+                )}
+              </div>
             </div>
-            <div className='flex items-center'>
-              <span className='w-4 h-4 rounded-full bg-gray-200 mr-2 border border-gray-300'></span>
-              <span>휴무</span>
-            </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
